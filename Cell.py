@@ -5,3 +5,4 @@ class Cell:
         
     def move():
         # Function to change location
+        new = 0

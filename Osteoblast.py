@@ -1,9 +1,9 @@
-import numpy as np
-import Cell
+from Cell import Cell
 
-class Osteoblast:
-    def __init__(Cell):
+class Osteoblast(Cell):
+    def __init__(self, location):
+        super().__init__(location)
 
     def formCollagen():
         # function to add collagen to locations within the osteoid
-
+        return 0
