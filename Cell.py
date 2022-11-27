@@ -1,8 +1,10 @@
 
 class Cell:
-    def __init__(self, location):
-        self.location = location
+    def __init__(self, xLoc, yLoc):
+        self.xLoc = xLoc
+        self.yLoc = yLoc
         
-    def move():
+    def move(self, newX, newY):
         # Function to change location
-        new = 0
+        self.xLoc = newX
+        self.yLoc = newY

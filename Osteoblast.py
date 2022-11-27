@@ -1,9 +1,32 @@
+import scipy as sp
 from Cell import Cell
 
 class Osteoblast(Cell):
-    def __init__(self, location):
-        super().__init__(location)
+    def __init__(self, xLoc, yLoc, collagenXDirection, collagenYDirection):
+        super().__init__(xLoc, yLoc)
+        self.collagenXDirection = collagenXDirection
+        self.collagenYDirection = collagenYDirection
+        self.X = self.xLoc + self.collagenXDirection
+        self.Y = self.yLoc + self.collagenYDirection
+        self.k1 = 2
 
-    def formCollagen():
+    def formNaiveCollagen(self, nCollagen, dt):
         # function to add collagen to locations within the osteoid
-        return 0
+        newValue = nCollagen.getValue(self.X,self.Y) * (1 - (self.k1 * dt))
+        nCollagen.setValue(newValue,self.X,self.Y)
+        
+
+    def formAssembledCollagen(self, nCollagen, aCollagen, dt):
+        newValue = aCollagen.getValue(self.X,self.Y) + (self.k1 * nCollagen.getValue(self.X,self.Y) * dt)
+        aCollagen.setValue(newValue,self.X,self.Y)
+        
+    def move(self, aCollagen, targetConc):
+        if aCollagen.getValue(self.X,self.Y) >= targetConc:
+            if self.X > self.xLoc:
+                self.xLoc -= 1
+            elif self.Y > self.yLoc:
+                self.yLoc -= 1
+            elif self.X < self.xLoc:
+                self.xLoc += 1
+            elif self.Y < self.yLoc:
+                self.yLoc += 1

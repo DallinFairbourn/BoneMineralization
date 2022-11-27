@@ -18,11 +18,15 @@ class Matrix:
     def getValue(self, x, y):
         return self.matrix[0,y,x]
     
+    def update(self):
+        self.matrix[0,:,:] = self.matrix[1,:,:]
+    
     def getOverallValue(self):
         return self.matrix.mean()
 
     def graph(self, title, cmap="hot"):
         fig, ax = plt.subplots()
         ax.set_title(title)
-        ax.imshow(self.matrix[0,:,:], cmap=cmap)
+        im = ax.imshow(self.matrix[0,:,:], cmap=cmap)
+        plt.colorbar(im)
         plt.show()
