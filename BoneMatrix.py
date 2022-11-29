@@ -1,10 +1,9 @@
 import scipy as sp
-import numpy as np
 from Matrix import Matrix
 from Osteoblast import Osteoblast
 
 class BoneMatrix:
-    def __init__(self, x, y, h, dt):
+    def __init__(self, x, y, h, dt, targetHAConc):
         # Values from the simulation parameters
         self.x = x
         self.y = y
@@ -12,16 +11,19 @@ class BoneMatrix:
         self.h = h
         self.sizeX = int(x/h)
         self.sizeY = int(y/h)
+        self.targetHAConc = targetHAConc
         
         # Constants
-        self.k1 = 1.16*10**-6
+        self.k1 = 0.1 #1.16*10**-6
         self.k2 = 1
-        self.k3 = 0.0116
+        self.k3 = 1 #0.0116
         self.a = 10
-        self.b = 10**57
-        self.r1 = 2.31*10**-12
-        self.r2 = 2.82*10**-32
-        self.v1 = 1.0*10**-6
+        self.b = 0.001 #10**57
+        self.r1 = 0.2 #2.31*10**-12
+        self.r2 = 12 #2.82*10**-32
+        self.v1 = 0.1 #1.0*10**-6
+        
+        self.delay = 1000
         
         # Matrices holding chemical information
         self.naiveCollagenDensity = Matrix(self.sizeX, self.sizeY)
@@ -41,7 +43,7 @@ class BoneMatrix:
         k = (D*self.dt)/(self.h*self.h)
         for i in range(self.sizeY-1):
             for j in range(self.sizeX-1):
-                newValue = ions.getValue(j,i) + k*(ions.getValue(j,i+1) + ions.getValue(j,i-1) + ions.getValue(j+1,i) + ions.getValue(j-1,i) - 4*ions.getValue(j,i)) - nIons * self.k3 * (sp.divide(self.b, (self.b + self.inhibitorConc.getValue(j, i)**self.a))) * self.nucleatorDensity.getValue(j, i)
+                newValue = ions.getValue(j,i) + k*(ions.getValue(j,i+1) + ions.getValue(j,i-1) + ions.getValue(j+1,i) + ions.getValue(j-1,i) - 4*ions.getValue(j,i)) - (nIons * self.HADensity.getValue(j,i))
                 ions.setValue(newValue, j, i)
                 
     def consumeInhibitor(self):
@@ -50,11 +52,13 @@ class BoneMatrix:
                 newValue = self.inhibitorConc.getValue(j,i) * (1 - self.r1 * self.assembledCollagenDensity.getValue(j,i) * self.dt) + (self.v1 * self.naiveCollagenDensity.getValue(j,i) * self.dt)
                 self.inhibitorConc.setValue(newValue,j,i)
     
-    def formHA(self):
-        for i in range(self.sizeY):
-            for j in range(self.sizeX):
-                newValue = self.HADensity.getValue(j,i) + self.k3 * (self.b / (self.b + self.inhibitorConc.getValue(j,i)**self.a)) * self.nucleatorDensity.getValue(j,i) * self.dt
-                self.HADensity.setValue(newValue,j,i)
+    def formHA(self, t):
+        if t >= self.delay:
+            for i in range(self.sizeY):
+                for j in range(self.sizeX):
+                    if self.HADensity.getValue(j,i) <= self.targetHAConc:
+                        newValue = self.HADensity.getValue(j,i) + self.k3 * (sp.divide(self.b, (self.b + self.inhibitorConc.getValue(j,i)**self.a))) * self.nucleatorDensity.getValue(j,i) * self.dt
+                        self.HADensity.setValue(newValue,j,i)
         
     def formNucleator(self):
         for i in range(self.sizeY):
@@ -68,6 +72,10 @@ class BoneMatrix:
             self.side2[i].formNaiveCollagen(self.naiveCollagenDensity, self.dt)
             self.side1[i].formAssembledCollagen(self.naiveCollagenDensity, self.assembledCollagenDensity, self.dt)
             self.side2[i].formAssembledCollagen(self.naiveCollagenDensity, self.assembledCollagenDensity, self.dt)
+            if self.side1[i].getPosition()[0] <= (len(self.side1)//2):
+                self.side1[i].move(self.naiveCollagenDensity, 1)
+            if self.side2[i].getPosition()[0] >= (len(self.side2)//2 - 1):
+                self.side2[i].move(self.naiveCollagenDensity, 1)
         
     def placeCells(self):
         side1 = []
@@ -78,14 +86,14 @@ class BoneMatrix:
             side2.append(Osteoblast(self.sizeX-2,i,1,0))
         return side1, side2
             
-    def update(self):
+    def update(self, t):
         self.formAssembledCollagen()
         self.consumeInhibitor()
-        self.formHA()
+        self.formHA(t)
         self.formNucleator()
-        self.diffuse(self.calciumConc, 10**5, 10)
-        self.diffuse(self.phosphateConc, 10**5, 6)
-        self.diffuse(self.inhibitorConc, 10**5, 0)
+        self.diffuse(self.calciumConc, 1, 10)
+        self.diffuse(self.phosphateConc, 1, 6)
+        self.diffuse(self.inhibitorConc, 1, 0)
         
         self.naiveCollagenDensity.update()
         self.assembledCollagenDensity.update()
@@ -131,3 +139,6 @@ class BoneMatrix:
     
     def getInhibitor(self):
         return self.inhibitorConc
+    
+    def getCellPostion(self):
+        return self.side1[4].getPosition(), self.side2[4].getPosition()

@@ -5,12 +5,12 @@ class Matrix:
     def __init__(self, sizeX, sizeY):
         self.sizeX = sizeX
         self.sizeY = sizeY
-        self.matrix = np.zeros((2, self.sizeX, self.sizeY))
+        self.matrix = np.zeros((2, self.sizeY, self.sizeX))
         
     def setInitialValue(self, initialValue):
         for i in range(self.sizeY):
             for j in range(self.sizeX):
-                self.matrix[0,i,j] = initialValue
+                self.matrix[:,i,j] = initialValue
 
     def setValue(self, value, x, y):
         self.matrix[1,y,x] = value
@@ -27,6 +27,7 @@ class Matrix:
     def graph(self, title, cmap="hot"):
         fig, ax = plt.subplots()
         ax.set_title(title)
-        im = ax.imshow(self.matrix[0,:,:], cmap=cmap)
+        im = plt.pcolor(self.matrix[0,:,:], cmap=cmap, vmin=0, vmax=1)
+        #im = ax.imshow(self.matrix[0,:,:], cmap=cmap)
         plt.colorbar(im)
         plt.show()

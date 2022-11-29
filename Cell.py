@@ -1,4 +1,3 @@
-
 class Cell:
     def __init__(self, xLoc, yLoc):
         self.xLoc = xLoc
@@ -8,3 +7,4 @@ class Cell:
         # Function to change location
         self.xLoc = newX
         self.yLoc = newY
+        
