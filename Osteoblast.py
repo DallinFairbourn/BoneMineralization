@@ -7,21 +7,18 @@ class Osteoblast(Cell):
         self.collagenYDirection = collagenYDirection
         self.X = self.xLoc + self.collagenXDirection
         self.Y = self.yLoc + self.collagenYDirection
-        self.k1 = 0.1
+        self.k1 = 7.02*10**-3
+        self.k2 = 0.1
+        self.targetConc = 5.85*10**-5
 
     def formNaiveCollagen(self, nCollagen, dt):
         # function to add collagen to locations within the osteoid
-        newValue = nCollagen.getValue(self.X,self.Y) * (1 - (self.k1 * dt))
-        nCollagen.setValue(newValue,self.X,self.Y)
+        if nCollagen.getValue(self.X, self.Y) <= self.targetConc:
+            newValue = nCollagen.getValue(self.X, self.Y) + (self.k1 - self.k2 * nCollagen.getValue(self.X, self.Y)) * dt
+            nCollagen.setValue(newValue,self.X,self.Y)
         
-
-    def formAssembledCollagen(self, nCollagen, aCollagen, dt):
-        if aCollagen.getValue(self.X, self.Y) <= 1:
-            newValue = aCollagen.getValue(self.X,self.Y) + (self.k1 * nCollagen.getValue(self.X,self.Y) * dt)
-            aCollagen.setValue(newValue,self.X,self.Y)
-        
-    def move(self, nCollagen, targetConc):
-        if round(nCollagen.getValue(self.X,self.Y), 3) == 0:
+    def move(self, nCollagen, aCollagen):
+        if aCollagen.getValue(self.X, self.Y) >= self.targetConc:
             if self.X > self.xLoc:
                 self.xLoc -= 1
                 self.X -= 1

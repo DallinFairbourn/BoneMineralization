@@ -24,10 +24,9 @@ class Matrix:
     def getOverallValue(self):
         return self.matrix.mean()
 
-    def graph(self, title, cmap="hot"):
+    def graph(self, title, cmap="hot", vmin=0, vmax=1):
         fig, ax = plt.subplots()
         ax.set_title(title)
-        im = plt.pcolor(self.matrix[0,:,:], cmap=cmap, vmin=0, vmax=1)
-        #im = ax.imshow(self.matrix[0,:,:], cmap=cmap)
+        im = plt.pcolor(self.matrix[0,:,:], cmap=cmap, vmin=vmin, vmax=vmax)
         plt.colorbar(im)
         plt.show()
