@@ -1,9 +1,8 @@
-import matplotlib.pyplot as plt
 from BoneMatrix import BoneMatrix
 
 class Simulation:
-    def __init__(self, x, y, h, dt, initialNaiveCollagenConc=0, initialCalciumConc=0.086, initialPhosphateConc=0.045, initialHAConc=3.75*10**-6*0.1, finalHAConc=0.000105):
-        # initialNaiveCollagenConc=9.4*10**5, initialCalciumConc=1.41*10**6, initialPhosphateConc=6.8*10**5, initialInhibitorConcentration=0.5*9.4*10**5, finalHAConc=9.4*10**5
+    # Define attributes of the simulation (defined in units of milligrams and micrometers)
+    def __init__(self, x, y, dt, h=50, initialCalciumConc=0.086, initialPhosphateConc=0.045, initialHAConc=3.75*10**-6*0.1, finalHAConc=0.000105):
         self.x = x
         self.y = y
         self.h = h
@@ -11,18 +10,16 @@ class Simulation:
         self.finalHAConc = finalHAConc
         
         self.bonematrix = BoneMatrix(self.x, x, self.h, self.dt, self.finalHAConc)
-        self.bonematrix.setInitialNaiveCollagen(initialNaiveCollagenConc)
         self.bonematrix.setInitialCalcium(initialCalciumConc)
         self.bonematrix.setInitialPhosphate(initialPhosphateConc)
         self.bonematrix.setInitialHA(initialHAConc)
         
-        
+    # Run simulation until final hydroxyapatite concentration is met
     def run(self):
         t = 0
         valueArray = []
         timeArray = []
         while self.bonematrix.getOverallConc() <= self.finalHAConc:
-            # time in seconds
             valueArray.append(self.bonematrix.getOverallConc())
             timeArray.append(t)
             t += self.dt
@@ -34,5 +31,5 @@ class Simulation:
                 self.bonematrix.getNaiveCollagen().graph("Naive Collagen at " + str(round(t,1)) + " days", cmap='Oranges', vmax=5.85*10**-5)
                 self.bonematrix.getAssembledCollagen().graph("Assembled Collagen at " + str(round(t,1)) + " days", cmap='Reds', vmax=5.85*10**-5)
                 self.bonematrix.getHA().graph("HA Concentration at " + str(round(t,1)) + " days", cmap='bone', vmax=self.finalHAConc)
-            
-            plt.scatter(timeArray, valueArray, c='blue')
+        # Return overall HA values characteristic of the simulation
+        return timeArray, valueArray
