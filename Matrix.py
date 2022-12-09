@@ -3,17 +3,18 @@ import matplotlib.pyplot as plt
 
 class Matrix:
     # Define attributes of each Matrix that will be created
-    def __init__(self, sizeX, sizeY):
+    def __init__(self, sizeX, sizeY, v):
         # Initialize array of given size
         self.sizeX = sizeX
         self.sizeY = sizeY
+        self.v = v
         self.matrix = np.zeros((2, self.sizeY, self.sizeX))
         
     # Function to create a colormap of the matrix
-    def graph(self, title, cmap="hot", vmin=0, vmax=1):
+    def graph(self, title, cmap="hot", vmin=0, vmax=1,):
         fig, ax = plt.subplots()
         ax.set_title(title)
-        im = plt.pcolor(self.matrix[0,:,:], cmap=cmap, vmin=vmin, vmax=vmax)
+        im = plt.pcolor(self.matrix[0,:,:]/self.v, cmap=cmap, vmin=vmin, vmax=vmax)
         plt.colorbar(im)
         plt.show()
         

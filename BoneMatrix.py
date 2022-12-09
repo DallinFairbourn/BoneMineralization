@@ -5,9 +5,10 @@ class BoneMatrix:
     # Define attributes of the BoneMatrix
     def __init__(self, x, y, h, dt, targetHADens):
         # Values from the simulation parameters
-        self.x = x / 10000
-        self.y = y / 10000
-        self.h = h / 10000
+        self.x = x
+        self.y = y
+        self.h = h
+        self.v = h**3
         self.dt = dt
         self.sizeX = int(x/h)
         self.sizeY = int(y/h)
@@ -22,12 +23,12 @@ class BoneMatrix:
         self.dailyPhosphateIntake = 8.06*10**-9
         
         # Matrices holding chemical information
-        self.naiveCollagenDensity = Matrix(self.sizeX, self.sizeY)
-        self.assembledCollagenDensity = Matrix(self.sizeX, self.sizeY)
-        self.HADensity = Matrix(self.sizeX, self.sizeY)
-        self.calciumConc = Matrix(self.sizeX, self.sizeY)
-        self.phosphateConc = Matrix(self.sizeX, self.sizeY)
-        self.inhibitorConc = Matrix(self.sizeX, self.sizeY)
+        self.naiveCollagenDensity = Matrix(self.sizeX, self.sizeY, self.v)
+        self.assembledCollagenDensity = Matrix(self.sizeX, self.sizeY, self.v)
+        self.HADensity = Matrix(self.sizeX, self.sizeY, self.v)
+        self.calciumConc = Matrix(self.sizeX, self.sizeY, self.v)
+        self.phosphateConc = Matrix(self.sizeX, self.sizeY, self.v)
+        self.inhibitorConc = Matrix(self.sizeX, self.sizeY, self.v)
         
         # Matrix hodling cell information
         self.side1, self.side2 = self.placeCells()
@@ -87,8 +88,8 @@ class BoneMatrix:
         self.formCollagen()
         self.formAssembledCollagen()
         self.formHA()
-        self.diffuse(self.calciumConc, 0.2)
-        self.diffuse(self.phosphateConc, 0.567)
+        self.diffuse(self.calciumConc, 0.42)
+        self.diffuse(self.phosphateConc, 0.58)
         
         self.naiveCollagenDensity.update()
         self.assembledCollagenDensity.update()
