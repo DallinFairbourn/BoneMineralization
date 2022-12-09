@@ -27,14 +27,7 @@ class Simulation:
             timeArray.append(t)
             t += self.dt
             self.bonematrix.update()
+            if round(t, 1) % 10 == 0:
+                self.bonematrix.getHA().graph("HA Concentration at " + str(round(t, 1)) + " days", cmap='bone', vmax=self.finalHAConc / self.v)
         # Return overall HA values characteristic of the simulation
         return timeArray, valueArray
-
-
-'''            if round(t, 1) % 10 == 0:
-                self.bonematrix.getCaclium().graph("Calcium Concentration at " + str(round(t,1)) + " days", cmap='Blues', vmax=self.Ca/self.v)
-                self.bonematrix.getPhosphate().graph("Phosphate Concentration at " + str(round(t,1)) + " days", cmap='viridis', vmax=self.PO/self.v)
-                self.bonematrix.getNaiveCollagen().graph("Naive Collagen at " + str(round(t,1)) + " days", cmap='Oranges', vmax=5.85*10**-5/self.v)
-                self.bonematrix.getAssembledCollagen().graph("Assembled Collagen at " + str(round(t,1)) + " days", cmap='Reds', vmax=5.85*10**-5/self.v)
-                self.bonematrix.getHA().graph("HA Concentration at " + str(round(t,1)) + " days", cmap='bone', vmax=self.finalHAConc/self.v)
-                '''

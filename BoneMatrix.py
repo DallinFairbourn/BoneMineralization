@@ -23,12 +23,12 @@ class BoneMatrix:
         self.dailyPhosphateIntake = 8.06*10**-9
         
         # Matrices holding chemical information
-        self.naiveCollagenDensity = Matrix(self.sizeX, self.sizeY, self.v)
-        self.assembledCollagenDensity = Matrix(self.sizeX, self.sizeY, self.v)
-        self.HADensity = Matrix(self.sizeX, self.sizeY, self.v)
-        self.calciumConc = Matrix(self.sizeX, self.sizeY, self.v)
-        self.phosphateConc = Matrix(self.sizeX, self.sizeY, self.v)
-        self.inhibitorConc = Matrix(self.sizeX, self.sizeY, self.v)
+        self.naiveCollagenDensity = Matrix(self.sizeX, self.sizeY, self.h)
+        self.assembledCollagenDensity = Matrix(self.sizeX, self.sizeY, self.h)
+        self.HADensity = Matrix(self.sizeX, self.sizeY, self.h)
+        self.calciumConc = Matrix(self.sizeX, self.sizeY, self.h)
+        self.phosphateConc = Matrix(self.sizeX, self.sizeY, self.h)
+        self.inhibitorConc = Matrix(self.sizeX, self.sizeY, self.h)
         
         # Matrix hodling cell information
         self.side1, self.side2 = self.placeCells()
